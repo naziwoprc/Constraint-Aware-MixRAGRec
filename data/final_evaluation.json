@@ -1,0 +1,51 @@
+[
+  {
+    "model": "Fixed E1 (Title Only)",
+    "top1_acc": 85.4,
+    "avg_tokens": 1283.0,
+    "token_savings_pct": 47.1,
+    "e1_rate_pct": 100.0
+  },
+  {
+    "model": "Fixed E2 (Targeted Specs)",
+    "top1_acc": 99.5,
+    "avg_tokens": 1776.0,
+    "token_savings_pct": 26.8,
+    "e1_rate_pct": 0.0
+  },
+  {
+    "model": "Fixed E3 (Standard Full RAG)",
+    "top1_acc": 100.0,
+    "avg_tokens": 2424.0,
+    "token_savings_pct": 0.0,
+    "e1_rate_pct": 0.0
+  },
+  {
+    "model": "Random Router (50/50)",
+    "top1_acc": 92.4,
+    "avg_tokens": 1529.0,
+    "token_savings_pct": 36.9,
+    "e1_rate_pct": 50.0
+  },
+  {
+    "model": "Trained Router (Ours - Predictive)",
+    "top1_acc": 98.0,
+    "avg_tokens": 1597.0,
+    "token_savings_pct": 34.1,
+    "e1_rate_pct": 35.9
+  },
+  {
+    "model": "Cascade + Verifier (Ours - Guardrail)",
+    "top1_acc": 99.5,
+    "avg_tokens": 1544.0,
+    "token_savings_pct": 36.3,
+    "e1_rate_pct": 85.4
+  },
+  {
+    "model": "Oracle Router (Theoretical Ceiling)",
+    "top1_acc": 100.0,
+    "avg_tokens": 1357.0,
+    "token_savings_pct": 44.0,
+    "e1_rate_pct": 85.4
+  }
+]
