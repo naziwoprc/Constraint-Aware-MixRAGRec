@@ -56,7 +56,7 @@ Output: {"hard": {"max_price": 900, "min_ram_gb": 8, "min_storage_gb": 512, "bra
 """
 
 
-@retry(stop=stop_after_attempt(4), wait=wait_exponential(min=2, max=30))
+@retry(stop=stop_after_attempt(7), wait=wait_exponential(min=2, max=60))
 def _call(text):
     r = client.chat.completions.create(
         model=MODEL,

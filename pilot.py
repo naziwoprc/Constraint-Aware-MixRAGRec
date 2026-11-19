@@ -18,7 +18,7 @@ Rules:
 Return ONLY JSON: {"ranking": [n1, n2, n3, n4, n5]} using candidate numbers."""
 
 
-@retry(stop=stop_after_attempt(4), wait=wait_exponential(min=2, max=30))
+@retry(stop=stop_after_attempt(7), wait=wait_exponential(min=2, max=60))
 def call(user_msg):
     r = client.chat.completions.create(
         model=MODEL,
