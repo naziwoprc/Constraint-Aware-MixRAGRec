@@ -26,6 +26,23 @@ satisfies the query:
 | **E2** | Title + query-relevant specs | ~1,800 |
 | **E3** | Title + full spec card | ~2,450 |
 
+## Final Benchmark Results (198 Test Queries)
+
+| Model / Baseline | Top-1 Accuracy | Avg Prompt Tokens | Token Savings vs E3 | E1 Routing Rate |
+| :--- | :---: | :---: | :---: | :---: |
+| **Fixed E1** (Title Only) | 85.4% | 1,283 | +47.1% | 100.0% |
+| **Fixed E2** (Targeted Specs) | 99.5% | 1,776 | +26.8% | 0.0% |
+| **Fixed E3** (Standard Full RAG) | 100.0% | 2,424 | 0.0% (ref) | 0.0% |
+| **Random Router** (50/50) | 92.4% | 1,529 | +36.9% | 50.0% |
+| **Trained Router** (Ours - Single-turn) | **98.0%** | **1,597** | **+34.1%** | 35.9% |
+| **Cascade + Verifier** (Ours - Guardrail) | **99.5%** | **1,544** | **+36.3%** | 85.4% |
+| **Oracle Router** (Theoretical Ceiling) | 100.0% | 1,357 | +44.0% | 85.4% |
+
+**Key Takeaways:**
+1. **Fixed E3 (Standard RAG)** is highly redundant, wasting ~1,140 extra tokens per query compared to E1.
+2. **Trained Router** achieves **98.0% accuracy** while saving **34.1% of prompt tokens** in a single round of generation.
+3. **Cascade with Verifier** achieves near-perfect **99.5% accuracy** with **36.3% token savings**, providing deterministic constraint guarantees.
+
 ## Pilot Results (100 train queries)
 
 | Method | Top-1 Accuracy | Avg Prompt Tokens |
@@ -141,7 +158,7 @@ NANOGPT_PROVIDER=deepinfra
 
 - **Model:** `deepseek/deepseek-v4.1-flash-1017`
 - **API:** NanoGPT (OpenAI-compatible, `https://nano-gpt.com/api/v1`)
-- **Provider:** `deepinfra` via `X-Provider` header
+- **Provider:** `coralbricks-standard` via `X-Provider` header
 
 ## Simplifications vs. Original Paper
 
@@ -149,7 +166,7 @@ NANOGPT_PROVIDER=deepinfra
 |--------|---------------------|--------------|
 | Knowledge structure | Knowledge Graph (triples, subgraphs) | Tabular spec cards |
 | LLM | LLaMA-3-8B / Mistral-7B (local) | DeepSeek V4.1 Flash (API) |
-| Router training | PPO/GAE with MMAPO reward | Logistic Regression / GBT |
+| Router training | PPO/GAE with MMAPO reward | Cost-Sensitive Calibrated Router |
 | Contrastive learning | DPO-style fine-tuning | Not implemented |
 | Alignment agent | LLM rewriting | Deterministic formatting |
 | Candidate pool | 1 target + 19 distractors | 5 valid + 10 near-miss + 5 far |
@@ -163,10 +180,11 @@ NANOGPT_PROVIDER=deepinfra
 - [x] Constraint Extractor (97% accuracy)
 - [x] Three expert levels (E1/E2/E3)
 - [x] Pilot experiment (100 train queries)
-- [ ] Full data collection (all splits × all experts)
-- [ ] Router training & tuning
-- [ ] Cascade baseline
-- [ ] Full evaluation & comparison
+- [x] Full data collection (all splits x all experts)
+- [x] Router training & tuning
+- [x] Cascade baseline
+- [x] Full evaluation & comparison
+- [ ] Multi-Agent LangGraph Pipeline (Demo)
 - [ ] Final report
 
 ## License
