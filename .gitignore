@@ -1,0 +1,23 @@
+# Virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+
+# Cache (LLM responses - reproducible but large)
+cache/
+
+# Large data files
+data/full-*.parquet
+data/laptops.parquet
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# OS
+Thumbs.db
+.DS_Store
