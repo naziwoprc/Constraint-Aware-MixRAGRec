@@ -32,8 +32,8 @@ def extract_features(row):
     f = row["feats"]
     return [
         f["frac_title_gb"],
-        f["max_price"] / 1000.0,
-        f["min_ram_gb"] / 16.0,
+        (f["max_price"] or 1000.0) / 1000.0,
+        (f["min_ram_gb"] or 8.0) / 16.0,
         (f["min_storage_gb"] or 0.0) / 512.0,
         1.0 if f["min_storage_gb"] is not None else 0.0,
         1.0 if f["has_brand"] else 0.0,

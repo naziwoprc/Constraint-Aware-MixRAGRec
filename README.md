@@ -135,9 +135,10 @@ code/
 ├── run_all.py            # Run all experts, compute oracle router stats
 ├── test.py               # API provider speed test
 │
-├── collect.py            # [TODO] Collect all results → router_data.jsonl
-├── train_router.py       # [TODO] Train router model
-└── evaluate.py           # [TODO] Full evaluation with all baselines
+├── collect.py            # Collect all results → router_data.jsonl
+├── train_router.py       # Train & calibrate router policy → router_model.joblib
+├── evaluate.py           # Full evaluation across 7 baselines
+└── agent_pipeline.py     # Stateful Multi-Agent LangGraph workflow & demo
 ```
 
 ## Setup
@@ -145,7 +146,7 @@ code/
 ```bash
 python -m venv .venv
 .venv\Scripts\activate        # Windows
-pip install openai pydantic diskcache tenacity python-dotenv pandas pyarrow
+pip install -r requirements.txt
 ```
 
 Create `.env`:
