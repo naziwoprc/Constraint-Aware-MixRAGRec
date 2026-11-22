@@ -184,8 +184,30 @@ NANOGPT_PROVIDER=deepinfra
 - [x] Router training & tuning
 - [x] Cascade baseline
 - [x] Full evaluation & comparison
-- [ ] Multi-Agent LangGraph Pipeline (Demo)
+- [x] Multi-Agent LangGraph Pipeline (Demo & Trace)
 - [ ] Final report
+
+## Multi-Agent LangGraph Architecture
+
+The system is fully orchestrated using **LangGraph** (`agent_pipeline.py`) as a stateful, cooperative multi-agent workflow:
+
+```mermaid
+graph TD;
+    START([User Query]) --> Extractor[Constraint Extractor Agent];
+    Extractor --> Router[MoE Router Agent];
+    Router --> Retriever[Knowledge Retriever Agent];
+    Retriever --> Recommender[Recommendation Agent];
+    Recommender --> Verifier[Evidence Verifier Agent];
+    Verifier -- "Valid (Top-1 satisfies constraints)" --> END([Final Recommendation]);
+    Verifier -- "Invalid (Constraint violated & E1)" --> Fallback[Cascade Fallback Handler];
+    Fallback --> Router;
+    Verifier -- "Warning (Fallback exhausted)" --> END;
+```
+
+Run interactive demo:
+```bash
+python agent_pipeline.py
+```
 
 ## License
 

@@ -1,0 +1,25 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	extractor(extractor)
+	router(router)
+	retriever(retriever)
+	recommender(recommender)
+	verifier(verifier)
+	fallback_handler(fallback_handler)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> extractor;
+	extractor --> router;
+	fallback_handler --> router;
+	recommender --> verifier;
+	retriever --> recommender;
+	router --> retriever;
+	verifier -. &nbsp;end_with_warning&nbsp; .-> __end__;
+	verifier -. &nbsp;fallback&nbsp; .-> fallback_handler;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
