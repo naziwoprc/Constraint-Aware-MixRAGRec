@@ -119,9 +119,7 @@ def main():
 
     best_thresh = 0.88
     best_utility = -1e9
-    lambda_cost = (
-        0.15  # Cost weight balancing accuracy vs normalized token overhead
-    )
+    lambda_cost = 0.15  # Cost weight balancing accuracy vs normalized token overhead
 
     for t in np.linspace(0.60, 0.98, 20):
         acc, toks, e1_count = eval_policy(dev_rows, p_dev, t)

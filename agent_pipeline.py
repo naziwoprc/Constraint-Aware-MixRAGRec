@@ -218,7 +218,8 @@ def recommender_node(state: AgentState) -> Dict[str, Any]:
         ranked = pool[:5]
 
     top_id = ranked[0] if ranked else pool[0]
-    top_item = cards.get(top_id)
+    card = cards.get(top_id)
+    top_item = {"item_id": top_id, **card} if card else None
 
     log_entry = (
         f"[Recommender Agent] Ranked top 5 items (Prompt Tokens: {ptoks}). "
@@ -242,26 +243,26 @@ def verifier_node(state: AgentState) -> Dict[str, Any]:
 
     violations = []
     if top_item:
-        if c.get("max_price") and (
+        if c.get("max_price") is not None and (
             top_item["price"] is None or top_item["price"] > c["max_price"]
         ):
             violations.append(
                 f"Price (${top_item['price']}) > Max (${c['max_price']})"
             )
-        if c.get("min_ram_gb") and (
+        if c.get("min_ram_gb") is not None and (
             top_item["ram_gb"] is None or top_item["ram_gb"] < c["min_ram_gb"]
         ):
             violations.append(
                 f"RAM ({top_item['ram_gb']}GB) < Min ({c['min_ram_gb']}GB)"
             )
         if (
-            c.get("brand")
+            c.get("brand") is not None
             and (top_item["brand"] or "").lower() != c["brand"].lower()
         ):
             violations.append(
                 f"Brand ({top_item['brand']}) != Required ({c['brand']})"
             )
-        if c.get("min_storage_gb") and not (
+        if c.get("min_storage_gb") is not None and not (
             top_item["storage_gb"] is not None
             and top_item["storage_gb"] >= c["min_storage_gb"]
         ):

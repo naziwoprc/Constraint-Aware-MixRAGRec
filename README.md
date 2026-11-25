@@ -138,7 +138,10 @@ code/
 ├── collect.py            # Collect all results → router_data.jsonl
 ├── train_router.py       # Train & calibrate router policy → router_model.joblib
 ├── evaluate.py           # Full evaluation across 7 baselines
-└── agent_pipeline.py     # Stateful Multi-Agent LangGraph workflow & demo
+├── agent_pipeline.py     # Stateful Multi-Agent LangGraph workflow & demo
+├── api.py                # FastAPI + SSE backend for 3D Studio
+└── static/
+    └── index.html        # Bilingual 3D WebGL + Chart.js + SSE Live Studio
 ```
 
 ## Setup
@@ -152,7 +155,7 @@ pip install -r requirements.txt
 Create `.env`:
 ```
 NANOGPT_API_KEY=sk-nano-...
-NANOGPT_PROVIDER=deepinfra
+NANOGPT_PROVIDER=coralbricks-standard
 ```
 
 ## LLM
@@ -205,10 +208,16 @@ graph TD;
     Verifier -- "Warning (Fallback exhausted)" --> END;
 ```
 
-Run interactive demo:
+Run interactive CLI demo:
 ```bash
 python agent_pipeline.py
 ```
+
+Run 3D & Real-Time SSE Web Studio:
+```bash
+python -m uvicorn api:app --reload --port 8000
+```
+Then open `http://localhost:8000` in your browser.
 
 ## License
 

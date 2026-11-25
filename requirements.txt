@@ -8,3 +8,5 @@ pyarrow>=26.0.1
 scikit-learn>=1.6.0
 langgraph>=1.2.0
 langchain-core>=1.8.0
+fastapi>=0.115.0
+uvicorn>=0.30.0
