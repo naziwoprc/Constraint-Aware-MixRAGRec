@@ -39,9 +39,27 @@ satisfies the query:
 | **Oracle Router** (Theoretical Ceiling) | 100.0% | 1,357 | +44.0% | 85.4% |
 
 **Key Takeaways:**
-1. **Fixed E3 (Standard RAG)** is highly redundant, wasting ~1,140 extra tokens per query compared to E1.
-2. **Trained Router** achieves **98.0% accuracy** while saving **34.1% of prompt tokens** in a single round of generation.
-3. **Cascade with Verifier** achieves near-perfect **99.5% accuracy** with **36.3% token savings**, providing deterministic constraint guarantees.
+1. **Fixed E3 (Standard RAG)** is highly redundant, wasting ~1,140 extra ranker tokens per query compared to E1.
+2. **Trained Router** achieves **98.0% accuracy** while saving **34.1% of ranker prompt tokens** in a single round of generation.
+3. **Cascade + Verifier** achieves **99.5% accuracy** with **36.3% ranker token savings** (and **+17.8%** end-to-end including Extractor overhead), providing deterministic verification against extracted constraints.
+
+## Extended Evaluation (v2/v3: Extractor Cost, 95% CIs & Filter Baselines)
+
+Accounting for the ~450-token Extractor call (`EXT_TOKENS = 450`), total LLM calls (latency proxy), Wilson 95% confidence intervals, and deterministic pre-filter baselines on the 198 test queries:
+
+| Method | Top-1 Acc | 95% CI (Wilson) | Total Tokens (+Ext) | Net Saving vs E3 | Avg LLM Calls |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Fixed E1** (Title Only) | 85.4% | [79.8%, 89.6%] | 1,283 | +47.1% | 1.00 |
+| **Fixed E2** (Targeted Specs) | 99.5% | [97.2%, 99.9%] | 2,226 | +8.2% | 2.00 |
+| **Fixed E3** (Standard Full RAG) | 100.0% | [98.1%, 100.0%] | 2,424 | +0.0% | 1.00 |
+| **Trained Router** (Predictive) | 98.0% | [94.9%, 99.2%] | 2,047 | +15.6% | 2.00 |
+| **Cascade + REAL Verifier** | 99.5% | [97.2%, 99.9%] | 1,994 | +17.8% | 2.15 |
+| **Filter → LLM Rerank** (Survivors Only) | 100.0% | [98.1%, 100.0%] | 1,010 | +58.4% | 2.00 |
+| **Filter Only** (Extracted, No Rerank) | 100.0% | [98.1%, 100.0%] | 450 | +81.4% | 1.00 |
+
+- **Real Verifier Audit (`evaluate_v3.py`):** `TP=169, FP=0, FN=0, TN=29` on E1 top-1 (`0 / 198` extractor mismatches on template test queries), confirming zero false-accepts relative to ground truth on the test set.
+- **Paired Bootstrap (10,000 resamples):** Accuracy difference between `Cascade + REAL Verifier` (99.5%) and `Fixed E3` (100.0%) is **not statistically significant** (`-0.5%`, 95% CI `[-1.5%, +0.0%]`).
+- **Why keep LLM Ranking vs. Filter-Only?** Deterministic filtering works when all constraints exist in clean structured columns and only hard constraints are scored (`Filter → LLM Rerank` preserves soft-preference ranking at `1,010` tokens). Adaptive granularity routing (`Cascade` / `Trained Router`) targets settings where pre-filtering is unavailable (unstructured specs/reviews or black-box retrieval indices).
 
 ## Pilot Results (100 train queries)
 
@@ -136,8 +154,12 @@ code/
 ├── test.py               # API provider speed test
 │
 ├── collect.py            # Collect all results → router_data.jsonl
+├── collect_top1.py       # Collect ranked item IDs for real Verifier → top1_data.jsonl
 ├── train_router.py       # Train & calibrate router policy → router_model.joblib
-├── evaluate.py           # Full evaluation across 7 baselines
+├── evaluate.py           # Benchmark evaluation across 7 baselines
+├── evaluate_v2.py        # Extended evaluation: Wilson CIs, bootstrap, extractor cost, filter baseline
+├── filter_rerank.py      # Deterministic filter → LLM rerank survivors baseline
+├── evaluate_v3.py        # Real Verifier confusion matrix & filter-rerank comparison
 ├── agent_pipeline.py     # Stateful Multi-Agent LangGraph workflow & demo
 ├── api.py                # FastAPI + SSE backend for 3D Studio
 └── static/
@@ -218,6 +240,12 @@ Run 3D & Real-Time SSE Web Studio:
 python -m uvicorn api:app --reload --port 8000
 ```
 Then open `http://localhost:8000` in your browser.
+
+## Limitations
+
+- **Structured Catalog Assumption:** The Verifier and pre-filter baselines assume access to clean tabular attributes (`cards.json`). In this structured setting, `Filter → LLM Rerank` achieves 100.0% accuracy at lower token cost (`1,010` vs `1,994`).
+- **Verification Scope:** Guarantees hold **relative to extracted constraints** (0% mismatch on template test queries, 97% full-match on paraphrased queries in `eval_para.py`).
+- **Evaluation Scope:** Uses 20-candidate pools with 5 valid items per query (infeasible queries are demonstrated in the UI/API, not the 198-item test benchmark), soft preferences are not quantitatively scored, and results reflect a single LLM (`deepseek/deepseek-v4.1-flash-1017`) and split seed (`42`).
 
 ## License
 

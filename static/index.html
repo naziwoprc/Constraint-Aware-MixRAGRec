@@ -1659,6 +1659,15 @@
       // =========================================================================
       // 1. BILINGUAL DICTIONARY (EN / FA)
       // =========================================================================
+      function escHtml(s) {
+        return String(s ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
       const I18N = {
         en: {
           appTitle: "Constraint-Aware MixRAGRec",
@@ -1666,7 +1675,7 @@
             "5-Agent LLM Laptop Recommendation Studio • FastAPI + LangGraph + WebGL",
           connChecking: "Checking API...",
           connLive: "Live FastAPI Connected",
-          connOffline: "Offline Demo Mode",
+          connOffline: "Offline Demo (SIMULATED)",
           tab3D: "3D Agent Flow",
           tabBench: "Benchmark Analytics",
           tabGran: "Granularity Explorer",
@@ -1769,7 +1778,7 @@
             "استودیوی سه‌بعدی پیشنهاد لپ‌تاپ ۵ ایجنتی • FastAPI + LangGraph + WebGL",
           connChecking: "در حال بررسی اتصال...",
           connLive: "متصل به FastAPI زنده",
-          connOffline: "حالت دمو آفلاین",
+          connOffline: "حالت آفلاین (شبیه‌سازی‌شده)",
           tab3D: "جریان سه‌بعدی ایجنت‌ها",
           tabBench: "نتایج بنچمارک",
           tabGran: "مقایسه سطوح بازیابی",
@@ -3490,6 +3499,10 @@
             result = simulateOfflinePipeline(query, currentMode, selectedQid);
           }
         } else {
+          showBanner(
+            "SIMULATED (Offline Demo) — start FastAPI (uvicorn api:app) for live LangGraph results.",
+            "info",
+          );
           await wait(250);
           result = simulateOfflinePipeline(query, currentMode, selectedQid);
         }
@@ -3558,11 +3571,11 @@
         if (res.is_valid) {
           vBox.className =
             "rounded-xl p-3 border text-xs font-mono bg-emerald-500/10 border-emerald-500/35 text-emerald-300";
-          vBox.innerHTML = `<div>&#10003; ${res.verifier_feedback || "VALID: Top-1 candidate satisfies all hard constraints."}</div>`;
+          vBox.innerHTML = `<div>&#10003; ${escHtml(res.verifier_feedback || "VALID: Top-1 candidate satisfies all hard constraints.")}</div>`;
         } else {
           vBox.className =
             "rounded-xl p-3 border text-xs font-mono bg-rose-500/10 border-rose-500/35 text-rose-300";
-          vBox.innerHTML = `<div>&#10005; ${res.verifier_feedback || "INVALID"} ${(res.violations || []).join(" | ")}</div>`;
+          vBox.innerHTML = `<div>&#10005; ${escHtml(res.verifier_feedback || "INVALID")} ${escHtml((res.violations || []).join(" | "))}</div>`;
         }
 
         if (res.exact_matches_in_catalog != null) {
@@ -3631,9 +3644,9 @@
           <div class="rounded-xl p-4 border ${borderCls}" dir="ltr">
             <div class="flex items-center justify-between gap-2 mb-2">
               <span class="px-2 py-0.5 rounded-md text-xs font-mono font-bold ${res.is_valid ? "bg-emerald-500 text-slate-950" : "bg-rose-500 text-white"}">#1 TOP RECOMMENDATION</span>
-              <span class="text-xs font-mono text-slate-400">${top.brand || "Unknown Brand"}</span>
+              <span class="text-xs font-mono text-slate-400">${escHtml(top.brand || "Unknown Brand")}</span>
             </div>
-            <div class="text-sm font-semibold text-white leading-snug">${top.title || "—"}</div>
+            <div class="text-sm font-semibold text-white leading-snug">${escHtml(top.title || "—")}</div>
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-3.5 text-xs font-mono">
               <div class="rounded-lg bg-[#0b0d12]/80 border border-white/[0.06] p-2">
                 <div class="text-[10px] text-slate-400">PRICE</div>
@@ -3675,7 +3688,7 @@
             <div class="min-w-0">
               <div class="flex items-center gap-2">
                 <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold ${idx === 0 ? "bg-emerald-500/20 text-emerald-300" : "bg-white/[0.06] text-slate-400"}">#${idx + 1}</span>
-                <span class="text-xs font-medium text-slate-200 truncate">${it.title}</span>
+                <span class="text-xs font-medium text-slate-200 truncate">${escHtml(it.title)}</span>
               </div>
             </div>
             <div class="flex items-center gap-3 text-[11px] font-mono text-slate-400 shrink-0">
@@ -4538,9 +4551,9 @@
         <div class="rounded-xl p-4 border transition-all ${borderCls}" dir="ltr">
           <div class="flex items-center justify-between gap-2 mb-2">
             <span class="px-2 py-0.5 rounded-md text-xs font-mono font-bold ${pillCls}">#1 LIVE CANDIDATE</span>
-            <span class="text-xs font-mono text-slate-400">${item.brand || "Unknown"} &bull; ID ${item.item_id ?? "—"}</span>
+            <span class="text-xs font-mono text-slate-400">${escHtml(item.brand || "Unknown")} &bull; ID ${escHtml(item.item_id ?? "—")}</span>
           </div>
-          <div class="text-sm font-semibold text-white leading-snug">${item.title || "—"}</div>
+          <div class="text-sm font-semibold text-white leading-snug">${escHtml(item.title || "—")}</div>
           <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-3 text-xs font-mono">
             <div class="rounded-lg bg-[#0b0d12]/80 border border-white/[0.06] p-2">
               <div class="text-[10px] text-slate-400">PRICE</div>
@@ -4587,7 +4600,7 @@
           `
               : ""
           }
-          ${feedback ? `<div class="mt-2.5 text-[11px] font-mono ${verdictState === "invalid" ? "text-rose-300" : "text-emerald-300"}">${feedback}</div>` : ""}
+          ${feedback ? `<div class="mt-2.5 text-[11px] font-mono ${verdictState === "invalid" ? "text-rose-300" : "text-emerald-300"}">${escHtml(feedback)}</div>` : ""}
         </div>
       `;
       }
@@ -4623,8 +4636,8 @@
                   <tr class="hover:bg-white/[0.02] transition-colors">
                     <td class="py-2.5 pr-3 font-mono font-bold ${idx === 0 ? "text-emerald-400" : "text-slate-400"}">#${idx + 1}</td>
                     <td class="py-2.5 pr-3 max-w-[200px]">
-                      <div class="text-slate-200 font-medium truncate" title="${(it.title || "").replace(/"/g, "&quot;")}">${it.title || "—"}</div>
-                      <div class="text-[10px] font-mono text-slate-500">${it.brand || "—"}</div>
+                      <div class="text-slate-200 font-medium truncate" title="${escHtml(it.title || "")}">${escHtml(it.title || "—")}</div>
+                      <div class="text-[10px] font-mono text-slate-500">${escHtml(it.brand || "—")}</div>
                     </td>
                     <td class="py-2.5 px-2 font-mono text-emerald-400 font-semibold whitespace-nowrap">${it.price != null ? "$" + Number(it.price).toFixed(0) : "N/A"}</td>
                     <td class="py-2.5 px-2 font-mono text-slate-200 whitespace-nowrap">${it.ram_gb != null ? it.ram_gb + "GB" : "—"}</td>
@@ -4711,8 +4724,8 @@
               ? ev.router_prob.toFixed(2)
               : "—";
           const body = `
-          <div>Expert: <span class="text-cyan-300 font-bold">${ev.selected_expert}</span> &bull; P(E1 safe): <span class="text-indigo-300">${probStr}</span></div>
-          <div class="text-slate-400">${ev.routing_reason || ""}</div>
+          <div>Expert: <span class="text-cyan-300 font-bold">${escHtml(ev.selected_expert)}</span> &bull; P(E1 safe): <span class="text-indigo-300">${probStr}</span></div>
+          <div class="text-slate-400">${escHtml(ev.routing_reason || "")}</div>
         `;
           setCardFinished(
             `${prefix}-router`,
@@ -4745,7 +4758,7 @@
             : "—";
           const body = `
           <div>Prompt Tokens: <span class="text-white font-bold">${ptoks.toLocaleString()}</span></div>
-          <div class="text-slate-400 truncate">Top-1: ${titlePreview}</div>
+          <div class="text-slate-400 truncate">Top-1: ${escHtml(titlePreview)}</div>
         `;
           setCardFinished(
             `${prefix}-recommender`,
@@ -4761,8 +4774,8 @@
         } else if (node === "verifier") {
           const isValid = Boolean(ev.is_valid);
           const body = isValid
-            ? `<div class="text-emerald-300 font-semibold">&#10003; ${ev.verifier_feedback || "VALID"}</div>`
-            : `<div class="text-rose-300 font-semibold">&#10005; ${ev.verifier_feedback || "INVALID"}</div>`;
+            ? `<div class="text-emerald-300 font-semibold">&#10003; ${escHtml(ev.verifier_feedback || "VALID")}</div>`
+            : `<div class="text-rose-300 font-semibold">&#10005; ${escHtml(ev.verifier_feedback || "INVALID")}</div>`;
           setCardFinished(
             `${prefix}-verifier`,
             isValid ? "ok" : "error",

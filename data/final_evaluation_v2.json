@@ -1,0 +1,87 @@
+{
+  "n_test": 198,
+  "extractor_tokens": 450,
+  "rows": [
+    {
+      "model": "Fixed E1",
+      "top1_acc": 85.4,
+      "ci_low": 79.8,
+      "ci_high": 89.6,
+      "avg_tokens_ranker": 1283,
+      "avg_tokens_with_extractor": 1283,
+      "token_savings_pct_with_extractor": 47.1,
+      "avg_llm_calls": 1.0
+    },
+    {
+      "model": "Fixed E2",
+      "top1_acc": 99.5,
+      "ci_low": 97.2,
+      "ci_high": 99.9,
+      "avg_tokens_ranker": 1776,
+      "avg_tokens_with_extractor": 2226,
+      "token_savings_pct_with_extractor": 8.2,
+      "avg_llm_calls": 2.0
+    },
+    {
+      "model": "Fixed E3",
+      "top1_acc": 100.0,
+      "ci_low": 98.1,
+      "ci_high": 100.0,
+      "avg_tokens_ranker": 2424,
+      "avg_tokens_with_extractor": 2424,
+      "token_savings_pct_with_extractor": 0.0,
+      "avg_llm_calls": 1.0
+    },
+    {
+      "model": "Trained Router",
+      "top1_acc": 98.0,
+      "ci_low": 94.9,
+      "ci_high": 99.2,
+      "avg_tokens_ranker": 1597,
+      "avg_tokens_with_extractor": 2047,
+      "token_savings_pct_with_extractor": 15.6,
+      "avg_llm_calls": 2.0
+    },
+    {
+      "model": "Cascade + Verifier",
+      "top1_acc": 99.5,
+      "ci_low": 97.2,
+      "ci_high": 99.9,
+      "avg_tokens_ranker": 1544,
+      "avg_tokens_with_extractor": 1994,
+      "token_savings_pct_with_extractor": 17.8,
+      "avg_llm_calls": 2.15
+    },
+    {
+      "model": "Oracle Router",
+      "top1_acc": 100.0,
+      "ci_low": 98.1,
+      "ci_high": 100.0,
+      "avg_tokens_ranker": 1357,
+      "avg_tokens_with_extractor": 1357,
+      "token_savings_pct_with_extractor": 44.0,
+      "avg_llm_calls": 1.0
+    },
+    {
+      "model": "Filter only (GT constraints, upper bound)",
+      "top1_acc": 100.0,
+      "ci_low": 98.1,
+      "ci_high": 100.0,
+      "avg_tokens_ranker": 0,
+      "avg_tokens_with_extractor": 0,
+      "token_savings_pct_with_extractor": 100.0,
+      "avg_llm_calls": 0.0
+    },
+    {
+      "model": "Filter only (extracted constraints)",
+      "top1_acc": 100.0,
+      "ci_low": 98.1,
+      "ci_high": 100.0,
+      "avg_tokens_ranker": 0,
+      "avg_tokens_with_extractor": 450,
+      "token_savings_pct_with_extractor": 81.4,
+      "avg_llm_calls": 1.0
+    }
+  ],
+  "extractor_mismatch_qids": []
+}

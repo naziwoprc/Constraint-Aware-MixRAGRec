@@ -1,0 +1,57 @@
+{
+  "n_test": 198,
+  "rows": [
+    {
+      "model": "Fixed E2",
+      "top1_acc": 99.5,
+      "ci_low": 97.2,
+      "ci_high": 99.9,
+      "avg_tokens_with_extractor": 2226,
+      "token_savings_pct": 8.2,
+      "avg_llm_calls": 2.0
+    },
+    {
+      "model": "Fixed E3",
+      "top1_acc": 100.0,
+      "ci_low": 98.1,
+      "ci_high": 100.0,
+      "avg_tokens_with_extractor": 2424,
+      "token_savings_pct": 0.0,
+      "avg_llm_calls": 1.0
+    },
+    {
+      "model": "Cascade (oracle signal, as in v1/v2)",
+      "top1_acc": 99.5,
+      "ci_low": 97.2,
+      "ci_high": 99.9,
+      "avg_tokens_with_extractor": 1994,
+      "token_savings_pct": 17.8,
+      "avg_llm_calls": 2.15
+    },
+    {
+      "model": "Cascade + REAL Verifier",
+      "top1_acc": 99.5,
+      "ci_low": 97.2,
+      "ci_high": 99.9,
+      "avg_tokens_with_extractor": 1994,
+      "token_savings_pct": 17.8,
+      "avg_llm_calls": 2.15
+    },
+    {
+      "model": "Filter -> LLM rerank (survivors only)",
+      "top1_acc": 100.0,
+      "ci_low": 98.1,
+      "ci_high": 100.0,
+      "avg_tokens_with_extractor": 1010,
+      "token_savings_pct": 58.4,
+      "avg_llm_calls": 2.0
+    }
+  ],
+  "verifier_confusion": {
+    "tp": 169,
+    "fp": 0,
+    "fn": 0,
+    "tn": 29
+  },
+  "false_accept_qids": []
+}

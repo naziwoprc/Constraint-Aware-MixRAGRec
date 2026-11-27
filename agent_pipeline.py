@@ -215,15 +215,16 @@ def recommender_node(state: AgentState) -> Dict[str, Any]:
         nums = [n for n in json.loads(m.group(0)) if 1 <= n <= len(pool)]
         ranked = [pool[n - 1] for n in dict.fromkeys(nums)]
     except Exception:
-        ranked = pool[:5]
+        ranked = []
 
-    top_id = ranked[0] if ranked else pool[0]
-    card = cards.get(top_id)
+    top_id = ranked[0] if ranked else None
+    card = cards.get(top_id) if top_id is not None else None
     top_item = {"item_id": top_id, **card} if card else None
 
+    title_preview = (top_item["title"][:60] + "...") if top_item else "PARSE_FAILED (None)"
     log_entry = (
-        f"[Recommender Agent] Ranked top 5 items (Prompt Tokens: {ptoks}). "
-        f"Top-1: [{top_id}] {top_item['title'][:60]}..."
+        f"[Recommender Agent] Ranked {len(ranked[:5])} items (Prompt Tokens: {ptoks}). "
+        f"Top-1: [{top_id}] {title_preview}"
     )
 
     return {
@@ -239,10 +240,15 @@ def recommender_node(state: AgentState) -> Dict[str, Any]:
 # -------------------------------------------------------------
 def verifier_node(state: AgentState) -> Dict[str, Any]:
     top_item = state.get("top_item")
-    c = state.get("hard_constraints", {})
+    ext_obj = state.get("ext_obj")
+    c = state.get("hard_constraints") or {}
 
     violations = []
-    if top_item:
+    if ext_obj is None:
+        violations.append("Constraint extraction failed (cannot verify hard constraints)")
+    if top_item is None:
+        violations.append("Recommender failed to parse a valid candidate")
+    elif ext_obj is not None:
         if c.get("max_price") is not None and (
             top_item["price"] is None or top_item["price"] > c["max_price"]
         ):
